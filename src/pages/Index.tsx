@@ -6,6 +6,10 @@ import { ContextPanel } from "@/components/ContextPanel";
 import { DashboardCard } from "@/components/DashboardCard";
 import { ConversationHistory } from "@/components/ConversationHistory";
 import { AISuggestions } from "@/components/AISuggestions";
+import { QuickNotes } from "@/components/QuickNotes";
+import { TopicSummarizer } from "@/components/TopicSummarizer";
+import { QuickLog } from "@/components/QuickLog";
+import { VoiceCall } from "@/components/VoiceCall";
 import { Brain, Wallet, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -151,8 +155,26 @@ const Index = () => {
                     <ConversationHistory />
                     <AISuggestions />
                   </div>
+
+                  {/* General AI Chat */}
+                  <div className="mt-6">
+                    <ChatInterface currentDomain={currentDomain} />
+                  </div>
                 </div>
               </>
+            ) : currentDomain === "learn" ? (
+              <div className="overflow-y-auto pb-4 space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <QuickNotes />
+                  <TopicSummarizer />
+                </div>
+                <ChatInterface currentDomain={currentDomain} />
+              </div>
+            ) : currentDomain === "health" ? (
+              <div className="overflow-y-auto pb-4 space-y-6">
+                <QuickLog />
+                <ChatInterface currentDomain={currentDomain} />
+              </div>
             ) : (
               <ChatInterface currentDomain={currentDomain} />
             )}
@@ -164,6 +186,9 @@ const Index = () => {
             onToggle={() => setIsPanelOpen(!isPanelOpen)}
           />
         </div>
+
+        {/* Voice Call Button */}
+        <VoiceCall currentDomain={currentDomain} />
       </div>
     </div>
   );
