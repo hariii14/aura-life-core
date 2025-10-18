@@ -3,13 +3,46 @@ import { DomainSidebar } from "@/components/DomainSidebar";
 import { TopNav } from "@/components/TopNav";
 import { ChatInterface } from "@/components/ChatInterface";
 import { ContextPanel } from "@/components/ContextPanel";
+import { DashboardCard } from "@/components/DashboardCard";
+import { ConversationHistory } from "@/components/ConversationHistory";
+import { AISuggestions } from "@/components/AISuggestions";
+import { Brain, Wallet, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type Domain = "learn" | "finance" | "health";
+type Domain = "learn" | "finance" | "health" | "general";
 
 const Index = () => {
-  const [currentDomain, setCurrentDomain] = useState<Domain>("learn");
+  const [currentDomain, setCurrentDomain] = useState<Domain>("general");
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  const dashboardData = {
+    learn: {
+      hoursStudied: 24.5,
+      topicsCovered: 12,
+      skillGrowth: 34,
+      weeklyTrend: [65, 72, 68, 80, 85, 88, 92],
+    },
+    finance: {
+      weeklySavings: 850,
+      expenseTrend: -12,
+      totalSaved: 12400,
+      spendingData: [
+        { name: "Mon", spending: 45, saving: 120 },
+        { name: "Tue", spending: 60, saving: 100 },
+        { name: "Wed", spending: 35, saving: 140 },
+        { name: "Thu", spending: 80, saving: 90 },
+        { name: "Fri", spending: 55, saving: 130 },
+        { name: "Sat", spending: 90, saving: 80 },
+        { name: "Sun", spending: 40, saving: 150 },
+      ],
+    },
+    health: {
+      moodScore: 8.2,
+      steps: 8547,
+      sleepHours: 7.5,
+      weeklyActivity: 85,
+    },
+  };
 
   return (
     <div className="min-h-screen flex flex-col overflow-hidden">
@@ -53,7 +86,77 @@ const Index = () => {
             onDomainChange={setCurrentDomain}
           />
           
-          <ChatInterface currentDomain={currentDomain} />
+          <div className="flex-1 flex flex-col gap-4 overflow-hidden">
+            {currentDomain === "general" ? (
+              <>
+                {/* Dashboard Section for General AI */}
+                <div className="overflow-y-auto pb-4 space-y-6">
+                  {/* Header */}
+                  <div className="text-center animate-fade-in">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">
+                      LIFEOS AI
+                    </h2>
+                    <div className="relative inline-block">
+                      <p className="text-lg md:text-xl font-light italic text-muted-foreground">
+                        Summarise, life.
+                      </p>
+                      <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent animate-glow" />
+                    </div>
+                  </div>
+
+                  {/* Dashboard Cards Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <DashboardCard
+                      domain="learn"
+                      icon={Brain}
+                      title="Learning Progress"
+                      stats={[
+                        { label: "Hours Studied", value: `${dashboardData.learn.hoursStudied}h` },
+                        { label: "Topics Covered", value: dashboardData.learn.topicsCovered },
+                        { label: "Skill Growth", value: `+${dashboardData.learn.skillGrowth}%` },
+                      ]}
+                      chartData={dashboardData.learn.weeklyTrend}
+                      chartType="line"
+                    />
+                    
+                    <DashboardCard
+                      domain="finance"
+                      icon={Wallet}
+                      title="Financial Health"
+                      stats={[
+                        { label: "Weekly Savings", value: `$${dashboardData.finance.weeklySavings}` },
+                        { label: "Expense Trend", value: `${dashboardData.finance.expenseTrend}%` },
+                        { label: "Total Saved", value: `$${dashboardData.finance.totalSaved.toLocaleString()}` },
+                      ]}
+                      chartData={dashboardData.finance.spendingData}
+                      chartType="bar"
+                    />
+                    
+                    <DashboardCard
+                      domain="health"
+                      icon={Heart}
+                      title="Wellness Overview"
+                      stats={[
+                        { label: "Mood Score", value: `${dashboardData.health.moodScore}/10` },
+                        { label: "Steps Today", value: dashboardData.health.steps.toLocaleString() },
+                        { label: "Sleep", value: `${dashboardData.health.sleepHours}h` },
+                      ]}
+                      chartData={dashboardData.health.weeklyActivity}
+                      chartType="radial"
+                    />
+                  </div>
+
+                  {/* Conversation History & AI Suggestions */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <ConversationHistory />
+                    <AISuggestions />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <ChatInterface currentDomain={currentDomain} />
+            )}
+          </div>
           
           <ContextPanel
             currentDomain={currentDomain}

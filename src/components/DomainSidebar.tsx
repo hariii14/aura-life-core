@@ -1,7 +1,7 @@
-import { Brain, DollarSign, Heart } from "lucide-react";
+import { Brain, DollarSign, Heart, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type Domain = "learn" | "finance" | "health";
+type Domain = "learn" | "finance" | "health" | "general";
 
 interface DomainSidebarProps {
   currentDomain: Domain;
@@ -9,6 +9,12 @@ interface DomainSidebarProps {
 }
 
 const domains = [
+  {
+    id: "general" as Domain,
+    name: "General AI",
+    icon: Sparkles,
+    description: "All Domains",
+  },
   {
     id: "learn" as Domain,
     name: "Learn",
@@ -50,6 +56,7 @@ export function DomainSidebar({ currentDomain, onDomainChange }: DomainSidebarPr
             {isActive && (
               <div className={cn(
                 "absolute inset-0 rounded-xl opacity-20 blur-xl animate-glow",
+                domain.id === "general" && "bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500",
                 domain.id === "learn" && "gradient-learn",
                 domain.id === "finance" && "gradient-finance",
                 domain.id === "health" && "gradient-health"
@@ -59,6 +66,7 @@ export function DomainSidebar({ currentDomain, onDomainChange }: DomainSidebarPr
             {/* Icon with gradient background */}
             <div className={cn(
               "relative z-10 w-12 h-12 rounded-lg flex items-center justify-center transition-all",
+              domain.id === "general" && isActive && "bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500",
               domain.id === "learn" && isActive && "gradient-learn",
               domain.id === "finance" && isActive && "gradient-finance",
               domain.id === "health" && isActive && "gradient-health",
@@ -71,6 +79,7 @@ export function DomainSidebar({ currentDomain, onDomainChange }: DomainSidebarPr
             <div className="hidden lg:flex flex-col items-start text-left flex-1 relative z-10">
               <span className={cn(
                 "font-medium text-base transition-all",
+                isActive && domain.id === "general" && "bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent",
                 isActive && domain.id === "learn" && "text-gradient-learn",
                 isActive && domain.id === "finance" && "text-gradient-finance",
                 isActive && domain.id === "health" && "text-gradient-health",
@@ -87,6 +96,7 @@ export function DomainSidebar({ currentDomain, onDomainChange }: DomainSidebarPr
             {isActive && (
               <div className={cn(
                 "absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-l-full",
+                domain.id === "general" && "bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500",
                 domain.id === "learn" && "gradient-learn",
                 domain.id === "finance" && "gradient-finance",
                 domain.id === "health" && "gradient-health"

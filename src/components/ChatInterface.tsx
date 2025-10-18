@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-type Domain = "learn" | "finance" | "health";
+type Domain = "learn" | "finance" | "health" | "general";
 
 interface Message {
   id: string;

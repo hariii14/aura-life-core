@@ -2,7 +2,7 @@ import { TrendingUp, Target, Activity, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-type Domain = "learn" | "finance" | "health";
+type Domain = "learn" | "finance" | "health" | "general";
 
 interface ContextPanelProps {
   currentDomain: Domain;
@@ -11,6 +11,11 @@ interface ContextPanelProps {
 }
 
 const domainInsights = {
+  general: [
+    { label: "Total Conversations", value: "42", icon: Activity },
+    { label: "Active Domains", value: "3", icon: Target },
+    { label: "Weekly Activity", value: "↑ 18%", icon: TrendingUp },
+  ],
   learn: [
     { label: "Active Goals", value: "3", icon: Target },
     { label: "Completed Today", value: "2 lessons", icon: TrendingUp },
@@ -67,7 +72,9 @@ export function ContextPanel({ currentDomain, isOpen, onToggle }: ContextPanelPr
         {/* Header */}
         <div>
           <h3 className="text-lg font-semibold mb-1">
-            {currentDomain === "learn"
+            {currentDomain === "general"
+              ? "Overall Insights"
+              : currentDomain === "learn"
               ? "Learning Insights"
               : currentDomain === "finance"
               ? "Financial Overview"
@@ -94,6 +101,7 @@ export function ContextPanel({ currentDomain, isOpen, onToggle }: ContextPanelPr
                   <div
                     className={cn(
                       "w-8 h-8 rounded-lg flex items-center justify-center transition-all group-hover:scale-110",
+                      currentDomain === "general" && "bg-purple-500/20",
                       currentDomain === "learn" && "bg-blue-500/20",
                       currentDomain === "finance" && "bg-emerald-500/20",
                       currentDomain === "health" && "bg-red-500/20"
@@ -105,6 +113,7 @@ export function ContextPanel({ currentDomain, isOpen, onToggle }: ContextPanelPr
                 <p
                   className={cn(
                     "text-2xl font-semibold",
+                    currentDomain === "general" && "bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent",
                     currentDomain === "learn" && "text-gradient-learn",
                     currentDomain === "finance" && "text-gradient-finance",
                     currentDomain === "health" && "text-gradient-health"
