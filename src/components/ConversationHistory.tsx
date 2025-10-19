@@ -12,44 +12,7 @@ interface Conversation {
   timestamp: string;
 }
 
-const mockConversations: Conversation[] = [
-  {
-    id: "1",
-    domain: "learn",
-    preview: "How can I improve my Python skills for data analysis?",
-    timestamp: "2 hours ago",
-  },
-  {
-    id: "2",
-    domain: "finance",
-    preview: "Review my spending patterns from last week",
-    timestamp: "5 hours ago",
-  },
-  {
-    id: "3",
-    domain: "health",
-    preview: "Track my sleep quality improvements",
-    timestamp: "Yesterday",
-  },
-  {
-    id: "4",
-    domain: "learn",
-    preview: "Explain machine learning basics",
-    timestamp: "2 days ago",
-  },
-  {
-    id: "5",
-    domain: "finance",
-    preview: "Help me create a budget for next month",
-    timestamp: "3 days ago",
-  },
-  {
-    id: "6",
-    domain: "health",
-    preview: "Suggest meditation techniques for stress",
-    timestamp: "3 days ago",
-  },
-];
+const mockConversations: Conversation[] = [];
 
 const domainConfig = {
   learn: {
@@ -78,40 +41,47 @@ export function ConversationHistory() {
       <CardContent className="flex-1 overflow-hidden p-0">
         <ScrollArea className="h-full px-6">
           <div className="space-y-3 pb-6">
-            {mockConversations.map((conversation, index) => {
-              const config = domainConfig[conversation.domain];
-              const Icon = config.icon;
+            {mockConversations.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center py-20">
+                <p className="text-sm text-muted-foreground">No conversations yet</p>
+                <p className="text-xs text-muted-foreground mt-1">Start chatting to see your history</p>
+              </div>
+            ) : (
+              mockConversations.map((conversation, index) => {
+                const config = domainConfig[conversation.domain];
+                const Icon = config.icon;
 
-              return (
-                <div
-                  key={conversation.id}
-                  className={cn(
-                    "group p-4 rounded-lg border border-white/10 hover:border-white/20",
-                    "backdrop-blur-sm bg-white/5 hover:bg-white/10",
-                    "transition-all duration-300 cursor-pointer",
-                    "hover:translate-x-1 animate-fade-in"
-                  )}
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                  }}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={cn("p-2 rounded-lg", config.bg)}>
-                      <Icon className={cn("w-4 h-4", config.color)} />
+                return (
+                  <div
+                    key={conversation.id}
+                    className={cn(
+                      "group p-4 rounded-lg border border-white/10 hover:border-white/20",
+                      "backdrop-blur-sm bg-white/5 hover:bg-white/10",
+                      "transition-all duration-300 cursor-pointer",
+                      "hover:translate-x-1 animate-fade-in"
+                    )}
+                    style={{
+                      animationDelay: `${index * 50}ms`,
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={cn("p-2 rounded-lg", config.bg)}>
+                        <Icon className={cn("w-4 h-4", config.color)} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium line-clamp-2 mb-1">
+                          {conversation.preview}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {conversation.timestamp}
+                        </p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium line-clamp-2 mb-1">
-                        {conversation.preview}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {conversation.timestamp}
-                      </p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </ScrollArea>
       </CardContent>

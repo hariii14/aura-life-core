@@ -12,24 +12,24 @@ interface ContextPanelProps {
 
 const domainInsights = {
   general: [
-    { label: "Total Conversations", value: "42", icon: Activity },
-    { label: "Active Domains", value: "3", icon: Target },
-    { label: "Weekly Activity", value: "↑ 18%", icon: TrendingUp },
+    { label: "Total Conversations", value: "0", icon: Activity },
+    { label: "Active Domains", value: "0", icon: Target },
+    { label: "Weekly Activity", value: "0%", icon: TrendingUp },
   ],
   learn: [
-    { label: "Active Goals", value: "3", icon: Target },
-    { label: "Completed Today", value: "2 lessons", icon: TrendingUp },
-    { label: "Streak", value: "7 days", icon: Activity },
+    { label: "Active Goals", value: "0", icon: Target },
+    { label: "Completed Today", value: "0 lessons", icon: TrendingUp },
+    { label: "Streak", value: "0 days", icon: Activity },
   ],
   finance: [
-    { label: "Monthly Budget", value: "$2,450", icon: Target },
-    { label: "Expenses This Week", value: "$320", icon: TrendingUp },
-    { label: "Savings Rate", value: "23%", icon: Activity },
+    { label: "Monthly Budget", value: "$0", icon: Target },
+    { label: "Expenses This Week", value: "$0", icon: TrendingUp },
+    { label: "Savings Rate", value: "0%", icon: Activity },
   ],
   health: [
-    { label: "Mood This Week", value: "Positive", icon: Activity },
-    { label: "Sleep Average", value: "7.5h", icon: TrendingUp },
-    { label: "Active Minutes", value: "145", icon: Target },
+    { label: "Mood This Week", value: "Not tracked", icon: Activity },
+    { label: "Sleep Average", value: "0h", icon: TrendingUp },
+    { label: "Active Minutes", value: "0", icon: Target },
   ],
 };
 
@@ -128,18 +128,9 @@ export function ContextPanel({ currentDomain, isOpen, onToggle }: ContextPanelPr
 
         {/* Quick Actions */}
         <div className="mt-auto space-y-2">
-          <Button
-            variant="outline"
-            className="w-full justify-start glass-panel border-white/10 hover:bg-white/10"
-          >
-            View Full Analytics
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full justify-start glass-panel border-white/10 hover:bg-white/10"
-          >
-            Export Data
-          </Button>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Start tracking to see your insights
+          </p>
         </div>
       </aside>
 

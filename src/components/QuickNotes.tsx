@@ -14,14 +14,7 @@ interface Note {
 }
 
 export function QuickNotes() {
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: "1",
-      title: "React Hooks",
-      content: "useState and useEffect are the most commonly used hooks...",
-      timestamp: new Date(Date.now() - 86400000),
-    },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
@@ -76,30 +69,37 @@ export function QuickNotes() {
 
       <ScrollArea className="h-[300px] pr-4">
         <div className="space-y-3">
-          {notes.map((note) => (
-            <div
-              key={note.id}
-              className="p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-            >
-              <div className="flex items-start justify-between mb-2">
-                <h4 className="font-medium">{note.title}</h4>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => handleDelete(note.id)}
-                  className="h-6 w-6 hover:bg-red-500/20"
-                >
-                  <Trash2 className="w-3 h-3" />
-                </Button>
-              </div>
-              <p className="text-sm text-muted-foreground line-clamp-2">
-                {note.content}
-              </p>
-              <span className="text-xs text-muted-foreground mt-2 block">
-                {note.timestamp.toLocaleDateString()}
-              </span>
+          {notes.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-[280px] text-center">
+              <p className="text-sm text-muted-foreground">No notes yet</p>
+              <p className="text-xs text-muted-foreground mt-1">Create your first note above</p>
             </div>
-          ))}
+          ) : (
+            notes.map((note) => (
+              <div
+                key={note.id}
+                className="p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <h4 className="font-medium">{note.title}</h4>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => handleDelete(note.id)}
+                    className="h-6 w-6 hover:bg-red-500/20"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {note.content}
+                </p>
+                <span className="text-xs text-muted-foreground mt-2 block">
+                  {note.timestamp.toLocaleDateString()}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </ScrollArea>
     </Card>

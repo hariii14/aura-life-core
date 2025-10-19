@@ -13,20 +13,7 @@ interface Topic {
 }
 
 export function TopicSummarizer() {
-  const [topics, setTopics] = useState<Topic[]>([
-    {
-      id: "1",
-      name: "Machine Learning Basics",
-      summary: "Supervised vs unsupervised learning, neural networks, and gradient descent fundamentals.",
-      timestamp: new Date(Date.now() - 172800000),
-    },
-    {
-      id: "2",
-      name: "React Component Lifecycle",
-      summary: "Mounting, updating, and unmounting phases with hooks equivalents.",
-      timestamp: new Date(Date.now() - 86400000),
-    },
-  ]);
+  const [topics, setTopics] = useState<Topic[]>([]);
   const [topicName, setTopicName] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -77,23 +64,30 @@ export function TopicSummarizer() {
 
       <ScrollArea className="h-[300px] pr-4">
         <div className="space-y-3">
-          {topics.map((topic) => (
-            <div
-              key={topic.id}
-              className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/15 transition-colors"
-            >
-              <h4 className="font-medium mb-2 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-blue-400" />
-                {topic.name}
-              </h4>
-              <p className="text-sm text-muted-foreground">
-                {topic.summary}
-              </p>
-              <span className="text-xs text-muted-foreground mt-2 block">
-                {topic.timestamp.toLocaleDateString()}
-              </span>
+          {topics.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-[280px] text-center">
+              <p className="text-sm text-muted-foreground">No topics summarized yet</p>
+              <p className="text-xs text-muted-foreground mt-1">Enter a topic above to get AI summary</p>
             </div>
-          ))}
+          ) : (
+            topics.map((topic) => (
+              <div
+                key={topic.id}
+                className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/15 transition-colors"
+              >
+                <h4 className="font-medium mb-2 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-blue-400" />
+                  {topic.name}
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  {topic.summary}
+                </p>
+                <span className="text-xs text-muted-foreground mt-2 block">
+                  {topic.timestamp.toLocaleDateString()}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </ScrollArea>
     </Card>

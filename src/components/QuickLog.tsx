@@ -13,20 +13,7 @@ interface HealthLog {
 }
 
 export function QuickLog() {
-  const [logs, setLogs] = useState<HealthLog[]>([
-    {
-      id: "1",
-      type: "Steps",
-      value: "8,543",
-      timestamp: new Date(Date.now() - 3600000),
-    },
-    {
-      id: "2",
-      type: "Water",
-      value: "6 glasses",
-      timestamp: new Date(Date.now() - 7200000),
-    },
-  ]);
+  const [logs, setLogs] = useState<HealthLog[]>([]);
   const [logType, setLogType] = useState("");
   const [logValue, setLogValue] = useState("");
 
@@ -78,22 +65,29 @@ export function QuickLog() {
 
       <ScrollArea className="h-[300px] pr-4">
         <div className="space-y-3">
-          {logs.map((log) => (
-            <div
-              key={log.id}
-              className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/15 transition-colors"
-            >
-              <div className="flex items-center justify-between mb-1">
-                <h4 className="font-medium">{log.type}</h4>
-                <span className="text-lg font-semibold text-red-400">
-                  {log.value}
+          {logs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-[280px] text-center">
+              <p className="text-sm text-muted-foreground">No health logs yet</p>
+              <p className="text-xs text-muted-foreground mt-1">Log your first activity above</p>
+            </div>
+          ) : (
+            logs.map((log) => (
+              <div
+                key={log.id}
+                className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/15 transition-colors"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="font-medium">{log.type}</h4>
+                  <span className="text-lg font-semibold text-red-400">
+                    {log.value}
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  {log.timestamp.toLocaleString()}
                 </span>
               </div>
-              <span className="text-xs text-muted-foreground">
-                {log.timestamp.toLocaleString()}
-              </span>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </ScrollArea>
     </Card>

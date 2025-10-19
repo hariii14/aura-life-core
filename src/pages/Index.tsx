@@ -19,34 +19,6 @@ const Index = () => {
   const [currentDomain, setCurrentDomain] = useState<Domain>("general");
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  const dashboardData = {
-    learn: {
-      hoursStudied: 24.5,
-      topicsCovered: 12,
-      skillGrowth: 34,
-      weeklyTrend: [65, 72, 68, 80, 85, 88, 92],
-    },
-    finance: {
-      weeklySavings: 850,
-      expenseTrend: -12,
-      totalSaved: 12400,
-      spendingData: [
-        { name: "Mon", spending: 45, saving: 120 },
-        { name: "Tue", spending: 60, saving: 100 },
-        { name: "Wed", spending: 35, saving: 140 },
-        { name: "Thu", spending: 80, saving: 90 },
-        { name: "Fri", spending: 55, saving: 130 },
-        { name: "Sat", spending: 90, saving: 80 },
-        { name: "Sun", spending: 40, saving: 150 },
-      ],
-    },
-    health: {
-      moodScore: 8.2,
-      steps: 8547,
-      sleepHours: 7.5,
-      weeklyActivity: 85,
-    },
-  };
 
   return (
     <div className="min-h-screen flex flex-col overflow-hidden">
@@ -115,11 +87,11 @@ const Index = () => {
                       icon={Brain}
                       title="Learning Progress"
                       stats={[
-                        { label: "Hours Studied", value: `${dashboardData.learn.hoursStudied}h` },
-                        { label: "Topics Covered", value: dashboardData.learn.topicsCovered },
-                        { label: "Skill Growth", value: `+${dashboardData.learn.skillGrowth}%` },
+                        { label: "Hours Studied", value: "0h" },
+                        { label: "Topics Covered", value: "0" },
+                        { label: "Skill Growth", value: "0%" },
                       ]}
-                      chartData={dashboardData.learn.weeklyTrend}
+                      chartData={[]}
                       chartType="line"
                     />
                     
@@ -128,11 +100,11 @@ const Index = () => {
                       icon={Wallet}
                       title="Financial Health"
                       stats={[
-                        { label: "Weekly Savings", value: `$${dashboardData.finance.weeklySavings}` },
-                        { label: "Expense Trend", value: `${dashboardData.finance.expenseTrend}%` },
-                        { label: "Total Saved", value: `$${dashboardData.finance.totalSaved.toLocaleString()}` },
+                        { label: "Weekly Savings", value: "$0" },
+                        { label: "Expense Trend", value: "0%" },
+                        { label: "Total Saved", value: "$0" },
                       ]}
-                      chartData={dashboardData.finance.spendingData}
+                      chartData={[]}
                       chartType="bar"
                     />
                     
@@ -141,11 +113,11 @@ const Index = () => {
                       icon={Heart}
                       title="Wellness Overview"
                       stats={[
-                        { label: "Mood Score", value: `${dashboardData.health.moodScore}/10` },
-                        { label: "Steps Today", value: dashboardData.health.steps.toLocaleString() },
-                        { label: "Sleep", value: `${dashboardData.health.sleepHours}h` },
+                        { label: "Mood Score", value: "0/10" },
+                        { label: "Steps Today", value: "0" },
+                        { label: "Sleep", value: "0h" },
                       ]}
-                      chartData={dashboardData.health.weeklyActivity}
+                      chartData={0}
                       chartType="radial"
                     />
                   </div>
