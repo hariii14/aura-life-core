@@ -68,12 +68,12 @@ const Index = () => {
                 {/* Dashboard Section for General AI */}
                 <div className="overflow-y-auto pb-4 space-y-6">
                   {/* Header */}
-                  <div className="text-center animate-fade-in">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">
+                  <div className="text-center animate-scale-in">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight transition-all duration-300 hover:scale-105 cursor-default">
                       LIFEOS AI
                     </h2>
                     <div className="relative inline-block">
-                      <p className="text-lg md:text-xl font-light italic text-muted-foreground">
+                      <p className="text-lg md:text-xl font-light italic text-muted-foreground animate-fade-in">
                         Summarise, life.
                       </p>
                       <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent animate-glow" />
@@ -82,44 +82,50 @@ const Index = () => {
 
                   {/* Dashboard Cards Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <DashboardCard
-                      domain="learn"
-                      icon={Brain}
-                      title="Learning Progress"
-                      stats={[
-                        { label: "Hours Studied", value: "0h" },
-                        { label: "Topics Covered", value: "0" },
-                        { label: "Skill Growth", value: "0%" },
-                      ]}
-                      chartData={[]}
-                      chartType="line"
-                    />
+                    <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
+                      <DashboardCard
+                        domain="learn"
+                        icon={Brain}
+                        title="Learning Progress"
+                        stats={[
+                          { label: "Hours Studied", value: "0h" },
+                          { label: "Topics Covered", value: "0" },
+                          { label: "Skill Growth", value: "0%" },
+                        ]}
+                        chartData={[]}
+                        chartType="line"
+                      />
+                    </div>
                     
-                    <DashboardCard
-                      domain="finance"
-                      icon={Wallet}
-                      title="Financial Health"
-                      stats={[
-                        { label: "Weekly Savings", value: "$0" },
-                        { label: "Expense Trend", value: "0%" },
-                        { label: "Total Saved", value: "$0" },
-                      ]}
-                      chartData={[]}
-                      chartType="bar"
-                    />
+                    <div className="animate-fade-in" style={{ animationDelay: "200ms" }}>
+                      <DashboardCard
+                        domain="finance"
+                        icon={Wallet}
+                        title="Financial Health"
+                        stats={[
+                          { label: "Weekly Savings", value: "$0" },
+                          { label: "Expense Trend", value: "0%" },
+                          { label: "Total Saved", value: "$0" },
+                        ]}
+                        chartData={[]}
+                        chartType="bar"
+                      />
+                    </div>
                     
-                    <DashboardCard
-                      domain="health"
-                      icon={Heart}
-                      title="Wellness Overview"
-                      stats={[
-                        { label: "Mood Score", value: "0/10" },
-                        { label: "Steps Today", value: "0" },
-                        { label: "Sleep", value: "0h" },
-                      ]}
-                      chartData={0}
-                      chartType="radial"
-                    />
+                    <div className="animate-fade-in" style={{ animationDelay: "300ms" }}>
+                      <DashboardCard
+                        domain="health"
+                        icon={Heart}
+                        title="Wellness Overview"
+                        stats={[
+                          { label: "Mood Score", value: "0/10" },
+                          { label: "Steps Today", value: "0" },
+                          { label: "Sleep", value: "0h" },
+                        ]}
+                        chartData={0}
+                        chartType="radial"
+                      />
+                    </div>
                   </div>
 
                   {/* Conversation History & AI Suggestions */}

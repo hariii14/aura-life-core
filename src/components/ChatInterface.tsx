@@ -76,24 +76,25 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
 
       {/* Messages container */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <div
             key={message.id}
             className={cn(
-              "flex animate-fade-in",
+              "flex animate-slide-in",
               message.role === "user" ? "justify-end" : "justify-start"
             )}
+            style={{ animationDelay: `${index * 100}ms` }}
           >
             <div
               className={cn(
-                "max-w-[80%] md:max-w-[70%] rounded-2xl px-5 py-3 backdrop-blur-lg",
+                "max-w-[80%] md:max-w-[70%] rounded-2xl px-5 py-3 backdrop-blur-lg transition-all duration-300 hover:scale-[1.02]",
                 message.role === "user"
-                  ? "bg-white/10 border border-white/20 text-foreground"
+                  ? "bg-white/10 border border-white/20 text-foreground hover:bg-white/15 hover:shadow-lg"
                   : cn(
-                      "border border-white/10",
-                      currentDomain === "learn" && "bg-blue-500/10",
-                      currentDomain === "finance" && "bg-emerald-500/10",
-                      currentDomain === "health" && "bg-red-500/10"
+                      "border border-white/10 hover:border-white/20 hover:shadow-lg",
+                      currentDomain === "learn" && "bg-blue-500/10 hover:bg-blue-500/15",
+                      currentDomain === "finance" && "bg-emerald-500/10 hover:bg-emerald-500/15",
+                      currentDomain === "health" && "bg-red-500/10 hover:bg-red-500/15"
                     )
               )}
             >
@@ -116,12 +117,12 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
             onClick={handleNewChat}
             size="icon"
             variant="ghost"
-            className="rounded-full hover:bg-white/10 flex-shrink-0"
+            className="rounded-full hover:bg-white/10 flex-shrink-0 transition-all duration-300 hover:rotate-90 hover:scale-110"
           >
             <Plus className="w-5 h-5" />
           </Button>
 
-          <div className="flex-1 flex items-center gap-2 glass-panel px-4 py-2">
+          <div className="flex-1 flex items-center gap-2 glass-panel px-4 py-2 transition-all duration-300 hover:shadow-lg">
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -133,7 +134,7 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
             <Button
               size="icon"
               variant="ghost"
-              className="rounded-full hover:bg-white/10 flex-shrink-0"
+              className="rounded-full hover:bg-white/10 flex-shrink-0 transition-all duration-300 hover:scale-110 active:scale-95"
             >
               <Mic className="w-4 h-4" />
             </Button>
@@ -143,7 +144,7 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
             onClick={handleSend}
             size="icon"
             className={cn(
-              "rounded-full flex-shrink-0 transition-all hover:scale-105",
+              "rounded-full flex-shrink-0 transition-all duration-300 hover:scale-110 active:scale-95 hover:shadow-xl hover:shadow-primary/50",
               currentDomain === "learn" && "gradient-learn",
               currentDomain === "finance" && "gradient-finance",
               currentDomain === "health" && "gradient-health"
