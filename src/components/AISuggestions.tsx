@@ -1,17 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, TrendingUp, Target, Activity } from "lucide-react";
+import { Sparkles, TrendingUp, Target, Lightbulb } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useInsights } from "@/hooks/useInsights";
 
-interface Suggestion {
-  id: string;
-  icon: typeof Sparkles;
-  title: string;
-  description: string;
-  priority: "high" | "medium" | "low";
-}
-
-const mockSuggestions: Suggestion[] = [];
+const iconMap = {
+  learn: Lightbulb,
+  finance: TrendingUp,
+  health: Target,
+  general: Sparkles,
+};
 
 const priorityStyles = {
   high: "border-health-from/30 bg-health-from/5",
@@ -20,34 +18,42 @@ const priorityStyles = {
 };
 
 export function AISuggestions() {
+  const { insights, loading } = useInsights();
+
   return (
     <Card className="glass-panel h-[400px] flex flex-col animate-fade-in">
       <CardHeader>
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-primary animate-glow" />
-          <CardTitle className="text-xl font-semibold">AI Recommendations</CardTitle>
+          <CardTitle className="text-xl font-semibold">AI Insights</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="flex-1 overflow-hidden p-0">
         <ScrollArea className="h-full px-6">
           <div className="space-y-3 pb-6">
-            {mockSuggestions.length === 0 ? (
+            {loading ? (
+              <div className="flex items-center justify-center h-full py-20">
+                <p className="text-sm text-muted-foreground">Loading...</p>
+              </div>
+            ) : insights.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center py-20">
-                <p className="text-sm text-muted-foreground">No AI recommendations yet</p>
-                <p className="text-xs text-muted-foreground mt-1">Start using the app to get personalized suggestions</p>
+                <p className="text-sm text-muted-foreground">No AI insights yet</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Chat with AI to get personalized insights
+                </p>
               </div>
             ) : (
-              mockSuggestions.map((suggestion, index) => {
-                const Icon = suggestion.icon;
+              insights.map((insight, index) => {
+                const Icon = iconMap[insight.domain as keyof typeof iconMap] || Sparkles;
 
                 return (
                   <div
-                    key={suggestion.id}
+                    key={insight.id}
                     className={cn(
                       "group p-4 rounded-lg border",
                       "backdrop-blur-sm transition-all duration-300 cursor-pointer",
                       "hover:scale-[1.02] hover:shadow-lg animate-fade-in",
-                      priorityStyles[suggestion.priority]
+                      priorityStyles[insight.priority]
                     )}
                     style={{
                       animationDelay: `${index * 50}ms`,
@@ -59,20 +65,20 @@ export function AISuggestions() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-2">
-                          <h4 className="text-sm font-semibold">{suggestion.title}</h4>
+                          <h4 className="text-sm font-semibold">{insight.title}</h4>
                           <span
                             className={cn(
                               "px-2 py-0.5 rounded-full text-xs font-medium",
-                              suggestion.priority === "high" && "bg-health-from/20 text-health-from",
-                              suggestion.priority === "medium" && "bg-learn-from/20 text-learn-from",
-                              suggestion.priority === "low" && "bg-finance-from/20 text-finance-from"
+                              insight.priority === "high" && "bg-health-from/20 text-health-from",
+                              insight.priority === "medium" && "bg-learn-from/20 text-learn-from",
+                              insight.priority === "low" && "bg-finance-from/20 text-finance-from"
                             )}
                           >
-                            {suggestion.priority}
+                            {insight.priority}
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed">
-                          {suggestion.description}
+                          {insight.content}
                         </p>
                       </div>
                     </div>

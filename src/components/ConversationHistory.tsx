@@ -1,18 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Brain, Wallet, Heart, ChevronRight } from "lucide-react";
+import { Brain, Wallet, Heart, MessageSquare, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useConversations } from "@/hooks/useConversations";
 
-type Domain = "learn" | "finance" | "health";
-
-interface Conversation {
-  id: string;
-  domain: Domain;
-  preview: string;
-  timestamp: string;
-}
-
-const mockConversations: Conversation[] = [];
+type Domain = "learn" | "finance" | "health" | "general";
 
 const domainConfig = {
   learn: {
@@ -30,9 +22,16 @@ const domainConfig = {
     color: "text-health-from",
     bg: "bg-health-from/10",
   },
+  general: {
+    icon: MessageSquare,
+    color: "text-primary",
+    bg: "bg-primary/10",
+  },
 };
 
 export function ConversationHistory() {
+  const { conversations, loading } = useConversations();
+
   return (
     <Card className="glass-panel h-[400px] flex flex-col animate-fade-in">
       <CardHeader>
@@ -41,15 +40,20 @@ export function ConversationHistory() {
       <CardContent className="flex-1 overflow-hidden p-0">
         <ScrollArea className="h-full px-6">
           <div className="space-y-3 pb-6">
-            {mockConversations.length === 0 ? (
+            {loading ? (
+              <div className="flex items-center justify-center h-full py-20">
+                <p className="text-sm text-muted-foreground">Loading...</p>
+              </div>
+            ) : conversations.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center py-20">
                 <p className="text-sm text-muted-foreground">No conversations yet</p>
                 <p className="text-xs text-muted-foreground mt-1">Start chatting to see your history</p>
               </div>
             ) : (
-              mockConversations.map((conversation, index) => {
+              conversations.map((conversation, index) => {
                 const config = domainConfig[conversation.domain];
                 const Icon = config.icon;
+                const timeAgo = new Date(conversation.created_at).toLocaleString();
 
                 return (
                   <div
@@ -73,7 +77,7 @@ export function ConversationHistory() {
                           {conversation.preview}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {conversation.timestamp}
+                          {timeAgo}
                         </p>
                       </div>
                       <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />

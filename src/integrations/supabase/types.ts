@@ -14,7 +14,164 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      conversations: {
+        Row: {
+          created_at: string | null
+          domain: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          domain: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          domain?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      dashboard_stats: {
+        Row: {
+          domain: string
+          id: string
+          stats: Json
+          updated_at: string | null
+        }
+        Insert: {
+          domain: string
+          id?: string
+          stats?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          domain?: string
+          id?: string
+          stats?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      goals: {
+        Row: {
+          created_at: string | null
+          current_value: number | null
+          domain: string
+          id: string
+          status: string | null
+          target_value: number
+          title: string
+          unit: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_value?: number | null
+          domain: string
+          id?: string
+          status?: string | null
+          target_value: number
+          title: string
+          unit: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_value?: number | null
+          domain?: string
+          id?: string
+          status?: string | null
+          target_value?: number
+          title?: string
+          unit?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      insights: {
+        Row: {
+          content: string
+          created_at: string | null
+          domain: string
+          id: string
+          priority: string | null
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          domain: string
+          id?: string
+          priority?: string | null
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          domain?: string
+          id?: string
+          priority?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_logs: {
+        Row: {
+          created_at: string | null
+          duration_minutes: number
+          id: string
+          notes: string | null
+          subject: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration_minutes: number
+          id?: string
+          notes?: string | null
+          subject: string
+        }
+        Update: {
+          created_at?: string | null
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          subject?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

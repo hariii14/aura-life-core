@@ -12,12 +12,14 @@ import { QuickLog } from "@/components/QuickLog";
 import { VoiceCall } from "@/components/VoiceCall";
 import { Brain, Wallet, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useDashboardData } from "@/hooks/useDashboardData";
 
 type Domain = "learn" | "finance" | "health" | "general";
 
 const Index = () => {
   const [currentDomain, setCurrentDomain] = useState<Domain>("general");
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const { stats, loading } = useDashboardData();
 
 
   return (
@@ -88,9 +90,9 @@ const Index = () => {
                         icon={Brain}
                         title="Learning Progress"
                         stats={[
-                          { label: "Hours Studied", value: "0h" },
-                          { label: "Topics Covered", value: "0" },
-                          { label: "Skill Growth", value: "0%" },
+                          { label: "Hours Studied", value: `${stats.learn.total_study_hours.toFixed(1)}h` },
+                          { label: "Topics Covered", value: stats.learn.topics_covered },
+                          { label: "Active Goals", value: stats.learn.active_goals },
                         ]}
                         chartData={[]}
                         chartType="line"
@@ -103,9 +105,9 @@ const Index = () => {
                         icon={Wallet}
                         title="Financial Health"
                         stats={[
-                          { label: "Weekly Savings", value: "$0" },
-                          { label: "Expense Trend", value: "0%" },
-                          { label: "Total Saved", value: "$0" },
+                          { label: "Weekly Savings", value: `$${stats.finance.weekly_savings}` },
+                          { label: "Expense Trend", value: `${stats.finance.expense_trend}%` },
+                          { label: "Total Saved", value: `$${stats.finance.total_saved}` },
                         ]}
                         chartData={[]}
                         chartType="bar"
@@ -118,11 +120,11 @@ const Index = () => {
                         icon={Heart}
                         title="Wellness Overview"
                         stats={[
-                          { label: "Mood Score", value: "0/10" },
-                          { label: "Steps Today", value: "0" },
-                          { label: "Sleep", value: "0h" },
+                          { label: "Mood Score", value: `${stats.health.mood_score}/10` },
+                          { label: "Steps Today", value: stats.health.steps_today },
+                          { label: "Sleep", value: `${stats.health.sleep_hours}h` },
                         ]}
-                        chartData={0}
+                        chartData={stats.health.mood_score * 10}
                         chartType="radial"
                       />
                     </div>

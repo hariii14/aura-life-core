@@ -22,12 +22,13 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
     {
       id: "1",
       role: "assistant",
-      content: `Hello! I'm your ${currentDomain === "learn" ? "learning companion" : currentDomain === "finance" ? "financial advisor" : currentDomain === "health" ? "wellness coach" : "personal assistant"}. How can I help you today?`,
+      content: `Hello! I'm your ${currentDomain === "learn" ? "learning companion" : currentDomain === "finance" ? "financial advisor" : currentDomain === "health" ? "wellness coach" : "personal assistant"}. I can automatically track your activities, goals, and provide insights. How can I help you today?`,
       timestamp: new Date(),
     },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
 
   const handleSend = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -57,6 +58,7 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
             content: m.content
           })),
           domain: currentDomain,
+          conversationId,
         }),
       });
 
