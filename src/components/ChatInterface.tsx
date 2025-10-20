@@ -22,35 +22,122 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
     {
       id: "1",
       role: "assistant",
-      content: `Hello! I'm your ${currentDomain === "learn" ? "learning companion" : currentDomain === "finance" ? "financial advisor" : "wellness coach"}. How can I help you today?`,
+      content: `Hello! I'm your ${currentDomain === "learn" ? "learning companion" : currentDomain === "finance" ? "financial advisor" : currentDomain === "health" ? "wellness coach" : "personal assistant"}. How can I help you today?`,
       timestamp: new Date(),
     },
   ]);
   const [inputValue, setInputValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
+  const handleSend = async () => {
+    if (!inputValue.trim() || isLoading) return;
 
-    const newMessage: Message = {
+    const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
       content: inputValue,
       timestamp: new Date(),
     };
 
-    setMessages([...messages, newMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
+    setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "I'm processing your request. This is a demo interface - connect to an AI API to enable real conversations!",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, aiResponse]);
-    }, 1000);
+    try {
+      const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+      const response = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map(m => ({
+            role: m.role,
+            content: m.content
+          })),
+          domain: currentDomain,
+        }),
+      });
+
+      if (!response.ok || !response.body) {
+        throw new Error("Failed to get AI response");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let assistantContent = "";
+      let assistantMessageId = (Date.now() + 1).toString();
+
+      // Add initial empty assistant message
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: assistantMessageId,
+          role: "assistant",
+          content: "",
+          timestamp: new Date(),
+        },
+      ]);
+
+      let textBuffer = "";
+      let streamDone = false;
+
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") {
+            streamDone = true;
+            break;
+          }
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantContent += content;
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantMessageId
+                    ? { ...m, content: assistantContent }
+                    : m
+                )
+              );
+            }
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error calling AI:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 2).toString(),
+          role: "assistant",
+          content: "I apologize, but I encountered an error. Please try again.",
+          timestamp: new Date(),
+        },
+      ]);
+      setIsLoading(false);
+    }
   };
 
   const handleNewChat = () => {
@@ -126,8 +213,9 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSend()}
-              placeholder="Ask LIFEOS anything…"
+              onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSend()}
+              placeholder={isLoading ? "AI is thinking..." : "Ask LIFEOS anything…"}
+              disabled={isLoading}
               className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
             />
             
@@ -143,14 +231,16 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
           <Button
             onClick={handleSend}
             size="icon"
+            disabled={isLoading || !inputValue.trim()}
             className={cn(
               "rounded-full flex-shrink-0 transition-all duration-300 hover:scale-110 active:scale-95 hover:shadow-xl hover:shadow-primary/50",
               currentDomain === "learn" && "gradient-learn",
               currentDomain === "finance" && "gradient-finance",
-              currentDomain === "health" && "gradient-health"
+              currentDomain === "health" && "gradient-health",
+              (isLoading || !inputValue.trim()) && "opacity-50 cursor-not-allowed"
             )}
           >
-            <Send className="w-4 h-4" />
+            <Send className={cn("w-4 h-4", isLoading && "animate-pulse")} />
           </Button>
         </div>
       </div>
