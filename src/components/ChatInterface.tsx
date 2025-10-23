@@ -150,6 +150,7 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
   };
 
   const handleNewChat = () => {
+    setConversationId(null);
     setMessages([
       {
         id: Date.now().toString(),
