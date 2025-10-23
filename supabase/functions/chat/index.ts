@@ -245,7 +245,7 @@ Be helpful, take initiative, and make the user feel supported while silently org
     const encoder = new TextEncoder();
     
     let assistantMessage = "";
-    let toolCalls: any[] = [];
+    const toolCallsMap = new Map<number, { id?: string; type?: string; function?: { name?: string; arguments: string } }>();
     
     const stream = new ReadableStream({
       async start(controller) {
@@ -276,8 +276,25 @@ Be helpful, take initiative, and make the user feel supported while silently org
                   controller.enqueue(encoder.encode(line + "\n"));
                 }
                 
+                // Properly accumulate tool calls
                 if (delta?.tool_calls) {
-                  toolCalls.push(...delta.tool_calls);
+                  for (const toolCall of delta.tool_calls) {
+                    const index = toolCall.index;
+                    const existing = toolCallsMap.get(index) || { function: { arguments: "" } };
+                    
+                    if (toolCall.id) existing.id = toolCall.id;
+                    if (toolCall.type) existing.type = toolCall.type;
+                    if (toolCall.function?.name) {
+                      existing.function = existing.function || { arguments: "" };
+                      existing.function.name = toolCall.function.name;
+                    }
+                    if (toolCall.function?.arguments) {
+                      existing.function = existing.function || { arguments: "" };
+                      existing.function.arguments += toolCall.function.arguments;
+                    }
+                    
+                    toolCallsMap.set(index, existing);
+                  }
                 }
                 
                 controller.enqueue(encoder.encode(line + "\n"));
@@ -288,12 +305,18 @@ Be helpful, take initiative, and make the user feel supported while silently org
           }
           
           // Execute tool calls
+          const toolCalls = Array.from(toolCallsMap.values());
           if (toolCalls.length > 0) {
             console.log(`[TOOL EXECUTION] Processing ${toolCalls.length} tool call(s)`);
           }
           
           for (const toolCall of toolCalls) {
             const functionName = toolCall.function?.name;
+            if (!functionName) {
+              console.error("[TOOL ERROR] No function name found in tool call");
+              continue;
+            }
+            
             let args;
             
             try {
