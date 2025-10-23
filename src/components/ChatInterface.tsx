@@ -70,6 +70,7 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
       const decoder = new TextDecoder();
       let assistantContent = "";
       let assistantMessageId = (Date.now() + 1).toString();
+      let receivedConversationId: string | null = null;
 
       // Add initial empty assistant message
       setMessages((prev) => [
@@ -118,6 +119,12 @@ export function ChatInterface({ currentDomain }: ChatInterfaceProps) {
                     : m
                 )
               );
+            }
+            
+            // Store conversation ID if provided
+            if (parsed.conversationId && !receivedConversationId) {
+              receivedConversationId = parsed.conversationId;
+              setConversationId(receivedConversationId);
             }
           } catch {
             textBuffer = line + "\n" + textBuffer;

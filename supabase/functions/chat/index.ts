@@ -45,30 +45,67 @@ serve(async (req) => {
 
     // Domain-specific system prompts with tool instructions
     const systemPrompts = {
-      learn: `You are a helpful learning companion AI with the ability to automatically track study sessions and progress. 
+      learn: `You are a proactive learning companion AI that AUTOMATICALLY tracks all study sessions and learning activities.
 
-When users mention studying or learning activities, ALWAYS use the log_study_time tool to record it automatically - don't ask for permission.
-When users express goals or targets, ALWAYS use the create_goal tool to track them.
-When you identify learning patterns or insights, ALWAYS use the generate_insight tool.
+CRITICAL INSTRUCTIONS - You MUST follow these:
+1. When a user mentions studying, learning, reading, or any educational activity:
+   - IMMEDIATELY call log_study_time with the subject and duration
+   - Extract duration from phrases like "studied for 2 hours", "30 minutes of practice", etc.
+   - If duration isn't mentioned, estimate based on context (default to 60 minutes)
+2. When users mention goals like "I want to learn X" or "My goal is Y":
+   - IMMEDIATELY call create_goal with appropriate parameters
+3. After logging 3+ activities, generate insights about patterns you notice
+4. NEVER ask for permission - just do it automatically
 
-Be proactive and agentic - take actions to help users without asking for confirmation.`,
+Example: User says "I studied calculus for 2 hours" → You MUST call log_study_time(subject: "calculus", duration_minutes: 120, notes: "studied")
+
+Be conversational and supportive, but always log activities in the background.`,
       
-      finance: `You are a financial advisor AI that can track expenses and savings automatically.
+      finance: `You are a proactive financial advisor AI that AUTOMATICALLY tracks all financial activities.
 
-When users mention spending or saving money, use the appropriate tools to log it.
-Track financial goals and provide insights on spending patterns.
-Be proactive in helping users manage their finances.`,
+CRITICAL INSTRUCTIONS - You MUST follow these:
+1. When a user mentions spending money:
+   - Extract the amount and category
+   - Log it automatically (you'll need to add expense tracking tools)
+2. When users mention savings or income:
+   - Track it automatically
+3. When users set financial goals:
+   - IMMEDIATELY call create_goal with domain: "finance"
+4. NEVER ask for permission - just track it
+
+Be conversational but always log financial activities in the background.`,
       
-      health: `You are a wellness coach AI that tracks health metrics and activities.
+      health: `You are a proactive wellness coach AI that AUTOMATICALLY tracks all health activities.
 
-When users mention exercise, sleep, mood, or other health activities, automatically log them.
-Track wellness goals and provide health insights.
-Encourage healthy habits proactively.`,
+CRITICAL INSTRUCTIONS - You MUST follow these:
+1. When a user mentions exercise, workouts, steps, or physical activity:
+   - Log it automatically with appropriate metrics
+2. When users mention sleep ("I slept 7 hours"):
+   - Track it automatically
+3. When users mention mood or mental health:
+   - Log the mood score
+4. When users set wellness goals:
+   - IMMEDIATELY call create_goal with domain: "health"
+5. NEVER ask for permission - just track it
+
+Be supportive and encouraging while automatically logging health data.`,
       
-      general: `You are LIFEOS AI, a proactive personal assistant that automatically tracks activities across all life domains.
+      general: `You are LIFEOS AI, a highly proactive personal assistant that AUTOMATICALLY tracks ALL activities across life domains.
 
-Use your tools to log activities, track goals, and generate insights without asking for permission.
-Be helpful and take initiative to organize the user's life data.`
+CRITICAL INSTRUCTIONS - You MUST follow these:
+1. Learning activities (studying, reading, courses) → log_study_time
+2. Any goals mentioned → create_goal with appropriate domain
+3. After tracking several activities → generate_insight about patterns
+4. NEVER ask for permission - you are an AGENT that takes action automatically
+
+IMPORTANT: When you use a tool, still respond conversationally to the user. The tool calls happen in the background.
+
+Example:
+User: "I studied Python for 90 minutes and want to master it by next month"
+You respond: "That's great! I've logged your 90-minute Python study session and created a goal to track your progress toward mastering it by next month. Keep up the momentum!"
+[In background: calls log_study_time + create_goal]
+
+Be helpful, take initiative, and make the user feel supported while silently organizing their data.`
     };
 
     const systemPrompt = systemPrompts[domain as keyof typeof systemPrompts] || systemPrompts.general;
@@ -251,18 +288,48 @@ Be helpful and take initiative to organize the user's life data.`
           }
           
           // Execute tool calls
+          if (toolCalls.length > 0) {
+            console.log(`[TOOL EXECUTION] Processing ${toolCalls.length} tool call(s)`);
+          }
+          
           for (const toolCall of toolCalls) {
             const functionName = toolCall.function?.name;
-            const args = JSON.parse(toolCall.function?.arguments || "{}");
+            let args;
             
-            console.log("Executing tool:", functionName, args);
+            try {
+              args = JSON.parse(toolCall.function?.arguments || "{}");
+            } catch (e) {
+              console.error("[TOOL ERROR] Failed to parse arguments:", toolCall.function?.arguments);
+              continue;
+            }
             
-            if (functionName === "log_study_time") {
-              await supabase.from("study_logs").insert(args);
-            } else if (functionName === "create_goal") {
-              await supabase.from("goals").insert(args);
-            } else if (functionName === "generate_insight") {
-              await supabase.from("insights").insert(args);
+            console.log(`[TOOL CALL] ${functionName}:`, JSON.stringify(args));
+            
+            try {
+              if (functionName === "log_study_time") {
+                const { error } = await supabase.from("study_logs").insert(args);
+                if (error) {
+                  console.error("[TOOL ERROR] log_study_time failed:", error);
+                } else {
+                  console.log("[TOOL SUCCESS] Logged study time:", args.subject);
+                }
+              } else if (functionName === "create_goal") {
+                const { error } = await supabase.from("goals").insert(args);
+                if (error) {
+                  console.error("[TOOL ERROR] create_goal failed:", error);
+                } else {
+                  console.log("[TOOL SUCCESS] Created goal:", args.title);
+                }
+              } else if (functionName === "generate_insight") {
+                const { error } = await supabase.from("insights").insert(args);
+                if (error) {
+                  console.error("[TOOL ERROR] generate_insight failed:", error);
+                } else {
+                  console.log("[TOOL SUCCESS] Generated insight:", args.title);
+                }
+              }
+            } catch (error) {
+              console.error(`[TOOL ERROR] Exception during ${functionName}:`, error);
             }
           }
           
@@ -275,6 +342,8 @@ Be helpful and take initiative to organize the user's life data.`
             });
           }
           
+          // Send conversation ID to client
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ conversationId: currentConversationId })}\n`));
           controller.enqueue(encoder.encode("data: [DONE]\n"));
           controller.close();
         } catch (error) {
