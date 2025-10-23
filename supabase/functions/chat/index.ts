@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -296,8 +296,6 @@ Be helpful, take initiative, and make the user feel supported while silently org
                     toolCallsMap.set(index, existing);
                   }
                 }
-                
-                controller.enqueue(encoder.encode(line + "\n"));
               } catch (e) {
                 console.error("Parse error:", e);
               }
